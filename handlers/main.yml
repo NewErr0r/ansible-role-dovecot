@@ -1,0 +1,12 @@
+---
+# handlers file for ansible-role-dovecot
+- name: Started and Enabled chronyd
+  service:  
+    name: chronyd
+    enabled: true 
+    state: started
+
+- name: Restarted Firewalld
+  service: 
+    name: firewalld 
+    state: restarted

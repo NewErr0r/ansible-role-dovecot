@@ -1,0 +1,75 @@
+---
+- name: System preparation | Set hostname 
+  ansible.builtin.hostname:
+    name: 'hostname'
+
+- name: System preparation | Install chrony and wget]
+  dnf: 
+    name: 
+      - chrony
+      - wget
+    state: latest
+
+- name: System preparation | Set timezone
+  community.general.timezone:
+    name: '{{ timezone }}'
+  notify:
+    - Started and Enabled chronyd
+
+- name: Security Settings | Configure rule firewealld
+  firewalld: 
+    port: '{{ item }}'
+    permanent: yes 
+    state: enabled 
+  loop: 
+    - 995/tcp
+    - 993/tcp
+    - 587/tcp
+    - 465/tcp
+    - 443/tcp
+    - 143/tcp
+    - 110/tcp
+    - 80/tcp
+    - 25/tcp
+  notify: 
+    - Restarted Firewalld
+
+- name: Security Settings | Disable SELinux 
+  ansible.posix.selinux:
+    state: disabled
+
+- name: Security Settings | Disable SELinux now
+  command: 
+    cmd: setenforce 0 
+  when: 
+    - ansible_selinux.status == "enabled"
+
+- name: Configuring the Web Server | Install nginx
+  dnf: 
+    name: nginx 
+    state: latest 
+  
+- name: Configuring the Web Server | Started and Enabled nginx 
+  service: 
+    name: nginx 
+    enabled: true 
+    state: started
+
+- name: Configuring the Web Server | Install epel-release
+  dnf: 
+    name: epel-release
+    state: latest 
+
+- name: Configuring the Web Server | Install remi-reliase
+  command:
+    cmd: dnf install -y http://rpms.remirepo.net/enterprise/remi-release-8.rpm
+
+- name: Configuring the Web Server | Installing PHP from the REMI repository
+  dnf: 
+    name: '@php:remi-7.2'
+    state: present
+
+- name: Configuring the Web Server | Install php-fpm
+  dnf: 
+    name: php-fpm
+    state: latest
