@@ -1,4 +1,4 @@
-<h1 align='center'>Автоматизация развёртывания веб-приложение для управления почтовыми ящиками и доменами в Postfix 'PostfixAdmin'</h1>
+<h1 align='center'>Автоматизация развёртывания веб-приложения для управления почтовыми ящиками и доменами в Postfix 'PostfixAdmin'</h1>
 
 <p>
     <strong>Шаг 1. </strong> Создание playbook для запуска роли
@@ -22,22 +22,22 @@
 <p>
 
 <p>
-    <strong>Пример переопределяемых переменных для playbook. </strong>
+    <strong>Список переопределяемых переменных для playbook. </strong>
 </p>
 <pre>
 #System preparation
 hostname: 'dovecot.champ.first'
 timezone: 'Europe/Moscow'
-
+<br>
 #MariaDB
 mariadb_root_password: "P@ssw0rd"
-
+<br>
 #PostfixAdmin
 path_download_postfixadmin: /root
 potsfixadmin_database_name: 'postfix'
 postfixadmin_database_username: 'postfix'
 postfixadmin_database_username_password: 'postfix123'
-
+<br>
 #Creating a directory for postfixadmin
 dir_postfixadmin: /usr/share/nginx/html/postfixadmin
 </pre>
