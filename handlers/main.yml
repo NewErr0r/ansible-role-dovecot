@@ -22,3 +22,8 @@
     name: nginx
     enabled: true 
     state: restarted
+
+- name: Restarted php-fpm
+  service:
+    name: php-fpm
+    state: restarted

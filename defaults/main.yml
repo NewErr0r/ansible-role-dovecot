@@ -5,3 +5,12 @@ timezone: 'Europe/Moscow'
 
 # MariaDB
 mariadb_root_password: "P@ssw0rd"
+
+# PostfixAdmin
+path_download_postfixadmin: /root
+potsfixadmin_database_name: 'postfix'
+postfixadmin_database_username: 'postfix'
+postfixadmin_database_username_password: 'postfix123'
+
+# Creating a directory for postfixadmin
+dir_postfixadmin: /usr/share/nginx/html/postfixadmin

@@ -82,7 +82,7 @@
     - Started and Enabled php-fpm
     - Restarted nginx
 
-- name: Configuring the Wev Server | Install MariaDB
+- name: Configuring the Web Server | Install MariaDB
   dnf:
     name: 
       - mariadb-server 
@@ -90,13 +90,13 @@
       - python3-PyMySQL
     state: latest
 
-- name: Configuring the Wev Server | Started and Enabled MariaDB 
+- name: Configuring the Web Server | Started and Enabled MariaDB 
   service: 
     name: mariadb 
     state: started 
     enabled: true
 
-- name: Configuring the Wev Server | Configure root password MariaDB
+- name: Configuring the Web Server | Configure root password MariaDB
   mysql_user:
     check_implicit_admin: true
     login_user: root 
@@ -112,3 +112,64 @@
       - php-mbstring 
       - php-imap
     state: latest
+  notify: 
+    - Restarted php-fpm
+
+- name: Installing and configuring PostfixAdmin | Download PostifAdmin
+  get_url:
+    url: https://sourceforge.net/projects/postfixadmin/files/latest/download
+    dest: '{{ path_download_postfixadmin }}/postfixadmin.tar.gz'
+
+- name: Installing and configuring PostfixAdmin | Creating a directory for postfixadmin
+  file: 
+    path: '{{ dir_postfixadmin }}'
+    state: directory
+
+#- name: Installing and configuring PostfixAdmin | Unpacking archive PostfixAdmin
+#  unarchive:
+#    src: '{{ path_download_postfixadmin }}/postfixadmin.tar.gz'
+#    dest: '{{ dir_postfixadmin }}'
+#    remote_src: true
+
+- name: Installing and configuring PostfixAdmin | Unpacking archive PostfixAdmin
+  command: 
+    cmd: tar -C /usr/share/nginx/html/postfixadmin -xvf postfixadmin.tar.gz --strip-components 1
+    chdir: '{{ path_download_postfixadmin }}'
+    creates: '{{ dir_postfixadmin }}/templates_c'
+
+- name: Installing and configuring PostfixAdmin | Creating the "templates_c" directory
+  file: 
+    path: '{{ dir_postfixadmin }}/templates_c'
+    state: directory
+
+- name: Installing and configuring PostfixAdmin | Setting the rights to the directory
+  file: 
+    path: '{{ dir_postfixadmin }}'
+    state: directory
+    recurse: yes
+    owner: apache
+    group: apache
+
+- name: Installing and configuring PostfixAdmin | Creating a postfix database
+  community.mysql.mysql_db:
+    name: "{{ potsfixadmin_database_name }}"
+    encoding: utf8
+    collation: utf8_bin
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+  failed_when: false 
+
+- name: Installing and configuring PostfixAdmin | Create username database for postfixadmin
+  community.mysql.mysql_user:
+    name: "{{ postfixadmin_database_username }}"
+    password: "{{ postfixadmin_database_username_password }}"
+    priv: '*.*:ALL,GRANT'
+    host: '%'
+    state: present
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+
+- name: Installing and configuring PostfixAdmin | Creating a postfixadmin configuration file
+  template: 
+    src: config.local.php.j2
+    dest: '{{ dir_postfixadmin }}/config.local.php'
