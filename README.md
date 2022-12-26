@@ -85,3 +85,7 @@ $CONF['setup_password'] = '7a8e14...c26';
 <p>
 Вводим логин и пароль для созданного пользователя
 </p>
+
+<p>
+    <strong>Шаг 7. </strong> Автоматизация развёртывания и настройки Postfix. Настройка Dovecot: https://github.com/NewErr0r/ansible-role-postfix-dovecot.git
+</p>
